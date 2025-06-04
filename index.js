@@ -12,7 +12,7 @@ app.use(cors({
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     }));
-app.use(express.json())
+app.use(express.json());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL)
@@ -25,7 +25,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 app.use('/restaurants', restaurantRoutes);
-app.use('reviews', reviewRoutes)
+app.use('reviews', reviewRoutes);
 app.use('/auth', authRoutes);
 
 // Start the server
