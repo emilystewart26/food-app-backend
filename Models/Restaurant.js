@@ -62,6 +62,10 @@ const restaurantSchema = new mongoose.Schema({
     type: [String],
     required: false
    },
+   description:{
+    type: String,
+    required: false
+   },
 
     // TODO: look into photo upload with cloudinary - pictures stored as URL??? >> add to Schema
 

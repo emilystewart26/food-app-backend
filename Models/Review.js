@@ -9,11 +9,11 @@ const reviewSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    ambianceReview: {
+    ambienceReview: {
         type: String,
         required: true,
     },
-    ambianceStars: {
+    ambienceStars: {
         type: Number,
         required: true,
     },
