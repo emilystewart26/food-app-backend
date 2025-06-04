@@ -4,14 +4,15 @@ const {
     getReviews,
     getReviewsById,
     getReviewsByUserId,
-    getReviewsByrestaurantId
-} = require("../controllers/reviewController")  
+    getReviewsByRestaurantId, // Fixed typo here
+    addReview
+} = require("../controllers/reviewControllers")  
 
 // Get all reviews + reviews by different search criteria
 router.get("/", getReviews)
 router.get("/:id", getReviewsById)
 router.get("/userid/:userId", getReviewsByUserId)
-router.get("/restaurantid/:restaurantId", getReviewsByrestaurantId)
+router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) // Fixed typo here
 
 // Create review
 router.post("/", addReview)
