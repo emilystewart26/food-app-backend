@@ -1,5 +1,7 @@
 const User = require("../Models/User")
 const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // TODO: integrate Google OAuth 2 Login / Passport.js
 
@@ -7,8 +9,14 @@ const mongoose = require("mongoose")
 exports.register = async (req, res) => {
     console.log(req.body)
     const { role, username, email, password } = req.body
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     try {
-        const user = new User({ role, username, email, password })
+        const user = new User({ 
+            role: req.body.role,
+            username: req.body.username, 
+            email:req.body.email, 
+            password: hashedPassword,
+         })
         await user.save()
         return res.status(201).json({ message: "Account registered successfully" })
     } catch (err) {
@@ -25,13 +33,16 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" })
         }
 
-        if (user.password !== password) {
-             return res.status(401).json({ message: "Invalid credentials" })
+        const passwordIsMatch = await bcrypt.compare(password, user.password);
+        if (!passwordIsMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        const token =
-            new Date().getTime().toString() +
-            Math.random().toString(36).substring(2, 15)
+        const token = jwt.sign(
+            { id: user._id, role: user.role }, 
+            process.env.JWT_SECRET,           
+            { expiresIn: "1h" }               
+        );
 
         await User.findByIdAndUpdate(user._id, { token: token })
 

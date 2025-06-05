@@ -4,18 +4,19 @@ const {
     getReviews,
     getReviewsById,
     getReviewsByUserId,
-    getReviewsByRestaurantId, // Fixed typo here
+    getReviewsByRestaurantId, 
     addReview
-} = require("../controllers/reviewControllers")  
+} = require("../controllers/reviewControllers");
+const {authenticateToken, authorizeRole} = require("../middleware/authMiddleware");  
 
 // Get all reviews + reviews by different search criteria
 router.get("/", getReviews)
 router.get("/:id", getReviewsById)
-router.get("/userid/:userId", getReviewsByUserId)
-router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) // Fixed typo here
+router.get("/userid/:userId", authenticateToken, authorizeRole("user"), getReviewsByUserId)
+router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) 
 
 // Create review
-router.post("/", addReview)
+router.post("/", authenticateToken, authorizeRole("user"), addReview)
 
 // update ??
 // delete ??

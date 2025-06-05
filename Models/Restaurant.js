@@ -30,17 +30,17 @@ const restaurantSchema = new mongoose.Schema({
         required: false,
     },
     category: {
-        type: String,
+        type: [String],
         required: true,
         enum: ["cafe", "bar", "restaurant","gastropub","takeaway"],
     },
    meals: {
-    type: String,
+    type: [String],
     required: true,
     enum: ["breakfast", "brunch", "lunch", "dinner"],
 },
    dietary:{
-    type: String,
+    type: [String],
     required: false,
     enum: ["vegetarian", "vegan", "glutenfree", "dairyfree", "halal", "kosher"],
    },
@@ -49,12 +49,12 @@ const restaurantSchema = new mongoose.Schema({
     required: true,
    },
    welcomes:{
-   type: String,
+   type: [String],
    required: false,
    enum: ["children","dogs"]
    },
    facilities:{
-    type: String,
+    type: [String],
    required: false,
    enum: ["toilets", "garden", "wifi"]
    },
