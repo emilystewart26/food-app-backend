@@ -24,9 +24,9 @@ const restaurantRoutes = require('./routes/restaurantRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-app.use('/restaurants', restaurantRoutes);
-app.use('reviews', reviewRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/users', authRoutes);
 
 // Start the server
 app.listen(PORT, () => {
