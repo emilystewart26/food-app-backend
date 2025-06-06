@@ -1,6 +1,7 @@
-const Restaurant = require("../Models/Restaurant")
-const User = require("../Models/User")
-const mongoose = require("mongoose")
+const Restaurant = require("../Models/Restaurant");
+const User = require("../Models/User");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 exports.getRestaurants = async (req, res) => {
     try {
