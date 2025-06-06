@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
     token: { 
         type: String, 
         default: null 
-    }
+    },
+    favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" }] // this allows each user to store a list of favourite restaurants by ref in an array
 })
 
 module.exports = mongoose.model("User", userSchema)

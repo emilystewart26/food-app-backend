@@ -23,10 +23,12 @@ mongoose.connect(process.env.MONGODB_URL)
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const authRoutes = require('./routes/authRoutes');
+const favouriteRoutes = require('./routes/favouriteRoutes')
 
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/users', authRoutes);
+app.use('/api/users/favourites', favouriteRoutes);
 
 // Start the server
 app.listen(PORT, () => {
