@@ -16,14 +16,13 @@ const userSchema = new mongoose.Schema({
     password: { 
         // think about password requirements (eg min.length, number, capital, symbol etc.)
         // https://mongoosejs.com/docs/api/schemastring.html#SchemaString.prototype.match()
-        // look into ENCRYPTION !!!
         type: String, 
         required: true 
     },
     role: {
         type: String,
         required: true,
-        enum:["admin", "user","vendor"]  // review this !!!
+        enum:["admin", "user","vendor"]  
     },
     createdAt: { 
         type: Date, 
