@@ -98,6 +98,7 @@ exports.addRestaurant = async (req, res) => {
         facilities: req.body.facilities,
         tags: req.body.tags,
         description: req.body.description,
+        imageUrl: req.body.imageUrl,
         userId: userInDB._id,
     })
     try {

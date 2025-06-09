@@ -66,9 +66,11 @@ const restaurantSchema = new mongoose.Schema({
     type: String,
     required: false
    },
-
-    // TODO: look into photo upload with cloudinary - pictures stored as URL??? >> add to Schema
-
+   imageUrl:{
+    type:[String],
+    required: false
+   },
+    
     // TODO: check free map APIs for fetching opening hours (preferred) - otherwise restaurant owners will have to add them manually
     // and aditional keys will have to be added to the schema so that they can be stored in the database
 
