@@ -2,6 +2,8 @@ const Restaurant = require("../Models/Restaurant");
 const User = require("../Models/User");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const geocodeWithNominatim = require("../utils/geocode");
+
 
 exports.getRestaurants = async (req, res) => {
     try {
@@ -37,7 +39,8 @@ exports.getRestaurantsByUserId = async (req, res) => {
 
 exports.getRestaurantsByName = async (req, res) => {
     try {
-        const restaurants = await Restaurant.find({ name: req.params.name })
+        const name = req.params.name
+        const restaurants = await Restaurant.find({ name: { $regex: new RegExp(`^${name}$`, "i") } }).exec();
         if (restaurants.length ===0) {
             return res.status(404).send({ error: "No restaurants found." })
         }
@@ -49,9 +52,9 @@ exports.getRestaurantsByName = async (req, res) => {
 
 exports.getRestaurantsByCity = async (req, res) => {
     try {
-        const restaurants = await Restaurant.find({ name: req.params.city })
-        if (restaurants.length ===0) {
-            return res.status(404).send({ error: "No restaurants found." })
+        const city = req.params.city
+        const restaurants = await Restaurant.find({ city: { $regex: new RegExp(`^${city}$`, "i") } }).exec();        if (! restaurants || restaurants.length ===0) {
+        return res.status(404).send({ error: "No restaurants found." })
         }
         res.json(restaurants)
     } catch (error) {
@@ -59,7 +62,92 @@ exports.getRestaurantsByCity = async (req, res) => {
     }
 }
 
-// TODO: exports.getRestaurantsByLocation - look into the logic - maybe how to use coordinates & search radius ???
+exports.getRestaurantsWithin1km = async (req, res) =>{
+    try {
+        const { lat, lng } = req.query;
+    
+        if (!lat || !lng) {
+          return res.status(400).json({ error: 'Missing latitude or longitude' });
+        }
+    
+        const nearbyRestaurants = await Restaurant.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: 'Point',
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+              },
+              distanceField: 'distance',
+              maxDistance: 1000, 
+              spherical: true,
+            },
+          },
+        ]);
+    
+        res.json(nearbyRestaurants);
+      } catch (error) {
+        console.error('Error fetching nearby restaurants:', error);
+        res.status(500).json({ error: 'Failed to get nearby restaurants' });
+      }
+}
+
+exports.getRestaurantsWithin3km = async (req, res) =>{
+    try {
+        const { lat, lng } = req.query;
+    
+        if (!lat || !lng) {
+          return res.status(400).json({ error: 'Missing latitude or longitude' });
+        }
+    
+        const nearbyRestaurants = await Restaurant.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: 'Point',
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+              },
+              distanceField: 'distance',
+              maxDistance: 3000, 
+              spherical: true,
+            },
+          },
+        ]);
+    
+        res.json(nearbyRestaurants);
+      } catch (error) {
+        console.error('Error fetching nearby restaurants:', error);
+        res.status(500).json({ error: 'Failed to get nearby restaurants' });
+      }
+}
+
+exports.getRestaurantsWithin5km = async (req, res) =>{
+    try {
+        const { lat, lng } = req.query;
+    
+        if (!lat || !lng) {
+          return res.status(400).json({ error: 'Missing latitude or longitude' });
+        }
+    
+        const nearbyRestaurants = await Restaurant.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: 'Point',
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+              },
+              distanceField: 'distance',
+              maxDistance: 5000, 
+              spherical: true,
+            },
+          },
+        ]);
+    
+        res.json(nearbyRestaurants);
+      } catch (error) {
+        console.error('Error fetching nearby restaurants:', error);
+        res.status(500).json({ error: 'Failed to get nearby restaurants' });
+      }
+}
 
 exports.addRestaurant = async (req, res) => {
 
@@ -82,12 +170,36 @@ exports.addRestaurant = async (req, res) => {
         return res.status(401).json({ message: "Unauthorized" })
     }
 
+
+
+const { address, postcode, city, country } = req.body;
+
+if (!address || !city || !country) {
+    return res.status(400).json({ message: "Address, city, and country are required to fetch geolocation" });
+}
+
+const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
+
+     
+    let lng, lat;
+    try {
+        const geolocation = await geocodeWithNominatim(fullAddress);
+        lng = geolocation.lng;
+        lat = geolocation.lat;
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to fetch geolocation" });
+    }
+
     const restaurant = new Restaurant({
         name: req.body.name,
         address: req.body.address,
         postcode: req.body.postcode,
         city: req.body.city,
         country: req.body.country,
+        location: {
+            type: 'Point',
+            coordinates: [lng, lat],
+          },
         telephone: req.body.telephone,
         website: req.body.website,
         category: req.body.category,
@@ -101,6 +213,7 @@ exports.addRestaurant = async (req, res) => {
         imageUrl: req.body.imageUrl,
         userId: userInDB._id,
     })
+
     try {
         const newRestaurant = await restaurant.save()
         res.status(201).json(newRestaurant)

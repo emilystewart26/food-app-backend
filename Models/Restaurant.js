@@ -21,6 +21,17 @@ const restaurantSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    location: {
+        type: {
+          type: String,
+          enum: ['Point'],
+          required: true,
+        },
+        coordinates: {
+          type: [Number], // [lng, lat]
+          required: true,
+        },
+    },
     telephone: {
         type: String,
         required: false,
@@ -70,9 +81,12 @@ const restaurantSchema = new mongoose.Schema({
     type:[String],
     required: false
    },
-    
-    // TODO: check free map APIs for fetching opening hours (preferred) - otherwise restaurant owners will have to add them manually
-    // and aditional keys will have to be added to the schema so that they can be stored in the database
+   // owner will add a link to embed Google Maps when registering a new restaurant
+   // eg. <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1177.4412283087293!2d-1.5809516802827572!3d53.82716690263906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4879592368e644c7%3A0x10184eab936d6909!2sFika%20North%20Coffee!5e0!3m2!1sen!2suk!4v1749547015348!5m2!1sen!2suk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+   googleMapsUrl: {
+    type:String,
+    required: false
+    }, 
 
     createdAt: {
         type: Date,
@@ -84,5 +98,8 @@ const restaurantSchema = new mongoose.Schema({
         required: true,
     },
 })
+
+// Geospatial index for distance queries
+restaurantSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model("Restaurant", restaurantSchema)
