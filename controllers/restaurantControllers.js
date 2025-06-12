@@ -3,151 +3,102 @@ const User = require("../Models/User");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const geocodeWithNominatim = require("../utils/geocode");
+const buildFilterObject = require('../utils/buildFilterObject');
 
 
 exports.getRestaurants = async (req, res) => {
     try {
-        const restaurants = await Restaurant.find()
+       const filter = buildFilterObject(req.query);
+        const restaurants = await Restaurant.find(filter)
         res.json(restaurants)
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
+}
+
+exports.getRestaurantsWithinRadius = async (req, res) =>{
+    try {
+        const { lat, lng, maxDistance } = req.query;
+    
+        if (!lat || !lng || !maxDistance) {
+          return res.status(400).json({ error: 'Missing latitude or longitude , or maxDistance' });
+        }
+
+        const filter = buildFilterObject(req.query);
+    
+        const nearbyRestaurants = await Restaurant.aggregate([
+          {
+            $geoNear: {
+              near: {
+                type: 'Point',
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+              },
+              distanceField: 'distance',
+              maxDistance: parseInt(maxDistance), // Use maxDistance from query 
+              spherical: true,
+              query: filter,
+            },
+          },
+        ]);
+    
+        res.json(nearbyRestaurants);
+      } catch (error) {
+        console.error('Error fetching nearby restaurants:', error);
+        res.status(500).json({ error: 'Failed to get nearby restaurants' });
+      }
 }
 
 exports.getRestaurantById = async (req, res) => {
-    try {
-        const restaurant = await Restaurant.findById(req.params.id)
-        res.json(restaurant)
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
+  try {
+      const restaurant = await Restaurant.findById(req.params.id)
+      res.json(restaurant)
+  } catch (err) {
+      res.status(500).json({ message: err.message })
+  }
 }
 
 exports.getRestaurantsByUserId = async (req, res) => {
-    try {
-        console.log("Route params:", req.params);
-        const userId = new mongoose.Types.ObjectId(req.params.userId)
-        const restaurants = await Restaurant.find({ userId });
-        if (restaurants.length ===0) {
-            return res.status(404).send({ error: "No restaurants found." })
-        }
-        res.json(restaurants)
-    } catch (error) {
-      res.status(500).json({ message: error.message })
-    }
+  try {
+      console.log("Route params:", req.params);
+      const userId = new mongoose.Types.ObjectId(req.params.userId)
+      const restaurants = await Restaurant.find({ userId });
+      if (restaurants.length ===0) {
+          return res.status(404).send({ error: "No restaurants found." })
+      }
+      res.json(restaurants)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 }
 
-exports.getRestaurantsByName = async (req, res) => {
-    try {
-        const name = req.params.name
-        const restaurants = await Restaurant.find({ name: { $regex: new RegExp(`^${name}$`, "i") } }).exec();
-        if (restaurants.length ===0) {
-            return res.status(404).send({ error: "No restaurants found." })
-        }
-        res.json(restaurants)
-    } catch (error) {
-      res.status(500).json({ message: error.message })
-    }
+/*  *** now handled via buildFilterObject.js in utils ***
+  
+ exports.getRestaurantsByName = async (req, res) => {
+  try {
+      const name = req.params.name
+      const restaurants = await Restaurant.find({ name: { $regex: new RegExp(`^${name}$`, "i") } }).exec();
+      if (restaurants.length ===0) {
+          return res.status(404).send({ error: "No restaurants found." })
+      }
+      res.json(restaurants)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 }
 
 exports.getRestaurantsByCity = async (req, res) => {
-    try {
-        const city = req.params.city
-        const restaurants = await Restaurant.find({ city: { $regex: new RegExp(`^${city}$`, "i") } }).exec();        if (! restaurants || restaurants.length ===0) {
-        return res.status(404).send({ error: "No restaurants found." })
-        }
-        res.json(restaurants)
-    } catch (error) {
-      res.status(500).json({ message: error.message })
-    }
-}
-
-exports.getRestaurantsWithin1km = async (req, res) =>{
-    try {
-        const { lat, lng } = req.query;
-    
-        if (!lat || !lng) {
-          return res.status(400).json({ error: 'Missing latitude or longitude' });
-        }
-    
-        const nearbyRestaurants = await Restaurant.aggregate([
-          {
-            $geoNear: {
-              near: {
-                type: 'Point',
-                coordinates: [parseFloat(lng), parseFloat(lat)],
-              },
-              distanceField: 'distance',
-              maxDistance: 1000, 
-              spherical: true,
-            },
-          },
-        ]);
-    
-        res.json(nearbyRestaurants);
-      } catch (error) {
-        console.error('Error fetching nearby restaurants:', error);
-        res.status(500).json({ error: 'Failed to get nearby restaurants' });
+  try {
+      const city = req.params.city
+      const restaurants = await Restaurant.find({ city: { $regex: new RegExp(`^${city}$`, "i") } }).exec();        if (! restaurants || restaurants.length ===0) {
+      return res.status(404).send({ error: "No restaurants found." })
       }
+      res.json(restaurants)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 }
+ */
 
-exports.getRestaurantsWithin3km = async (req, res) =>{
-    try {
-        const { lat, lng } = req.query;
-    
-        if (!lat || !lng) {
-          return res.status(400).json({ error: 'Missing latitude or longitude' });
-        }
-    
-        const nearbyRestaurants = await Restaurant.aggregate([
-          {
-            $geoNear: {
-              near: {
-                type: 'Point',
-                coordinates: [parseFloat(lng), parseFloat(lat)],
-              },
-              distanceField: 'distance',
-              maxDistance: 3000, 
-              spherical: true,
-            },
-          },
-        ]);
-    
-        res.json(nearbyRestaurants);
-      } catch (error) {
-        console.error('Error fetching nearby restaurants:', error);
-        res.status(500).json({ error: 'Failed to get nearby restaurants' });
-      }
-}
-
-exports.getRestaurantsWithin5km = async (req, res) =>{
-    try {
-        const { lat, lng } = req.query;
-    
-        if (!lat || !lng) {
-          return res.status(400).json({ error: 'Missing latitude or longitude' });
-        }
-    
-        const nearbyRestaurants = await Restaurant.aggregate([
-          {
-            $geoNear: {
-              near: {
-                type: 'Point',
-                coordinates: [parseFloat(lng), parseFloat(lat)],
-              },
-              distanceField: 'distance',
-              maxDistance: 5000, 
-              spherical: true,
-            },
-          },
-        ]);
-    
-        res.json(nearbyRestaurants);
-      } catch (error) {
-        console.error('Error fetching nearby restaurants:', error);
-        res.status(500).json({ error: 'Failed to get nearby restaurants' });
-      }
-}
 
 exports.addRestaurant = async (req, res) => {
 

@@ -2,16 +2,14 @@ const express = require("express")
 const router = express.Router()
 const { 
     getRestaurants,
-    getRestaurantsByCity,
-    getRestaurantsByName,
+    //getRestaurantsByCity,
+    //getRestaurantsByName,
     getRestaurantById,
     getRestaurantsByUserId,
     addRestaurant,
     updateRestaurant,
     deleteRestaurant,
-    getRestaurantsWithin1km,
-    getRestaurantsWithin3km,
-    getRestaurantsWithin5km,
+    getRestaurantsWithinRadius,
 } = require("../controllers/restaurantControllers")  
 const {authenticateToken, authorizeRole}  = require("../middleware/authMiddleware");
 
@@ -19,13 +17,11 @@ const {authenticateToken, authorizeRole}  = require("../middleware/authMiddlewar
 
 // Get all restaurants + get restaurants by different search criteria (anyone - no login required)
 router.get("/", getRestaurants);
-router.get("/nearby", getRestaurantsWithin1km);
-router.get("/nearby", getRestaurantsWithin3km);
-router.get("/nearby", getRestaurantsWithin5km);
+router.get("/nearby", getRestaurantsWithinRadius);
 router.get("/:id", getRestaurantById);
 router.get("/userid/:userId", getRestaurantsByUserId); // userId = "vendor" user._id
-router.get("/name/:name", getRestaurantsByName);
-router.get("/city/:city", getRestaurantsByCity);
+//router.get("/name/:name", getRestaurantsByName);  *** now handled via buildFilterObject.js in utils ***
+//router.get("/city/:city", getRestaurantsByCity);  *** now handled via buildFilterObject.js in utils ***
 
 
 // Create restaurant (if logged in as "vendor")
