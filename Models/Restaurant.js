@@ -70,7 +70,7 @@ const restaurantSchema = new mongoose.Schema({
    enum: ["toilets", "garden", "wifi"]
    },
    tags:{
-    type: [String],
+    type: [String],  // freetype - max 3-4 fields??
     required: false
    },
    description:{
@@ -87,7 +87,16 @@ const restaurantSchema = new mongoose.Schema({
     type:String,
     required: false
     }, 
-
+    priceRange: {
+        type: String,
+        required: false,
+        enum: ["cheap" , "moderate", "expensive"] //["£", "££","£££"]
+    },
+    accessibility: {
+        type:[String],
+        required: false,
+        enum: ["wheelchair","disabled bathroom"]
+    },
     createdAt: {
         type: Date,
         default: Date.now,

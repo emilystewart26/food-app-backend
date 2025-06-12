@@ -5,10 +5,12 @@ const router = express.Router();
 
 
 
-router.post("/:restaurantId", authenticateToken, authorizeRole("user"), addToFavourites)
+router.get("/", authenticateToken, authorizeRole("user"), getFavourites);
 
-router.delete("/:restaurantId", authenticateToken, authorizeRole("user"), removeFromFavourites)
+router.post("/:restaurantId", authenticateToken, authorizeRole("user"), addToFavourites);
 
-router.get("/", authenticateToken, authorizeRole("user"), getFavourites)
+router.delete("/:restaurantId", authenticateToken, authorizeRole("user"), removeFromFavourites);
+
+
 
 module.exports = router;
