@@ -18,10 +18,10 @@ exports.getRestaurants = async (req, res) => {
 
 exports.getRestaurantsWithinRadius = async (req, res) =>{
     try {
-        const { lat, lng, maxDistance } = req.query;
+        const { lat, lng, radius } = req.query;
     
-        if (!lat || !lng || !maxDistance) {
-          return res.status(400).json({ error: 'Missing latitude or longitude , or maxDistance' });
+        if (!lat || !lng || !radius) {
+          return res.status(400).json({ error: 'Missing latitude, longitude, or radius' });
         }
 
         const filter = buildFilterObject(req.query);
@@ -34,7 +34,7 @@ exports.getRestaurantsWithinRadius = async (req, res) =>{
                 coordinates: [parseFloat(lng), parseFloat(lat)],
               },
               distanceField: 'distance',
-              maxDistance: parseInt(maxDistance), // Use maxDistance from query 
+              maxDistance: parseInt(radius), // Use radius from query 
               spherical: true,
               query: filter,
             },
@@ -162,6 +162,9 @@ const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
         tags: req.body.tags,
         description: req.body.description,
         imageUrl: req.body.imageUrl,
+        googleMapsUrl: req.body.googleMapsUrl,
+        priceRange: req.body.priceRange,
+        accessibility: req.body.accessibility,
         userId: userInDB._id,
     })
 
