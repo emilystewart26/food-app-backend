@@ -5,7 +5,7 @@ const {
     getReviewsById,
     getReviewsByUserId,
     getReviewsByRestaurantId, 
-    addReview
+    addReview,
 } = require("../controllers/reviewControllers");
 const {authenticateToken, authorizeRole} = require("../middleware/authMiddleware");  
 
@@ -16,9 +16,7 @@ router.get("/userid/:userId", authenticateToken, authorizeRole("user"), getRevie
 router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) 
 
 // Create review
-router.post("/", authenticateToken, authorizeRole("user"), addReview)
-
-// update ??
-// delete ??
+router.post("/", authenticateToken, authorizeRole(["user","admin"]), addReview)
+ 
 
 module.exports = router
