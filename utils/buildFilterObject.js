@@ -26,7 +26,8 @@ function buildFilterObject(query) {
     }
  // Search by City
     if (query.city) {
-        filter.city = query.city.trim(); // exact match
+        const cityName = query.city.trim(); 
+        filter.city = { $regex: new RegExp(cityName,'i') }; 
       }
 
  // Search by Name (partial match, case-insensitive)
