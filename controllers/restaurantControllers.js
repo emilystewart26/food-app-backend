@@ -7,15 +7,45 @@ const buildFilterObject = require('../utils/buildFilterObject');
 
 
 exports.getRestaurants = async (req, res) => {
+
+    const { lat, lng, radius = 5000 } = req.query; // !! review - set radius value to default 5k here or front end ??
+    const filter = buildFilterObject(req.query);
+
     try {
-       const filter = buildFilterObject(req.query);
+        // Check if geolocation used
+        if (lat && lng) {
+          const results = await Restaurant.aggregate([
+              {
+                $geoNear: {
+                  near: {
+                    type: 'Point',
+                    coordinates: [parseFloat(lng), parseFloat(lat)],
+                  },
+                  distanceField: 'distance',
+                  maxDistance: parseInt(radius),
+                  spherical: true,
+                  query: filter,
+                },
+              },
+            ]);
+            return res.json(results);
+          }
+
+        // Without geolocation 
         const restaurants = await Restaurant.find(filter)
+
+        if (restaurants.length === 0) {
+            return res.status(404).send({ error: "No restaurants found." })
+         };
+         
         res.json(restaurants)
+
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
 }
 
+/*   *** merged with getRestaurants -> will check if geolocation values are available or not inside getRestaurants
 exports.getRestaurantsWithinRadius = async (req, res) =>{
     try {
         const { lat, lng, radius } = req.query;
@@ -46,7 +76,7 @@ exports.getRestaurantsWithinRadius = async (req, res) =>{
         console.error('Error fetching nearby restaurants:', error);
         res.status(500).json({ error: 'Failed to get nearby restaurants' });
       }
-}
+} */
 
 exports.getRestaurantById = async (req, res) => {
   try {
