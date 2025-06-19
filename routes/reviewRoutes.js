@@ -16,7 +16,8 @@ router.get("/userid/:userId", authenticateToken, authorizeRole("user"), getRevie
 router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) 
 
 // Create review
-router.post("/", authenticateToken, authorizeRole(["user","admin"]), addReview)
+ router.post("/", authenticateToken, authorizeRole(["user","admin"]), addReview)
  
+router.post("/", addReview)
 
 module.exports = router

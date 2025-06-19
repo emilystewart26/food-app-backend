@@ -51,9 +51,9 @@ exports.getReviewsByRestaurantId = async (req, res) => {
 
 exports.addReview = async (req, res) => {
      
-    const restaurantId = new mongoose.Types.ObjectId(req.params.restaurantId);
-
-    const userToken = req.headers.authorization.split(" ")[1]
+   const restaurantId = new mongoose.Types.ObjectId(req.body.restaurantId);//changed req.params.restaurantId
+  
+     const userToken = req.headers.authorization.split(" ")[1]
 
     console.log("addReview")
     console.log(req.headers)
@@ -82,7 +82,7 @@ exports.addReview = async (req, res) => {
     locationReview: req.body.locationReview,
     locationStars: req.body.locationStars,
     userId: userInDB._id,
-    restaurantId: restaurantId._id,
+    restaurantId: restaurantId,//changed restaurantId._id 
   })
 
   try {
