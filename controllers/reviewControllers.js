@@ -41,7 +41,9 @@ exports.getReviewsByRestaurantId = async (req, res) => {
         const restaurantId = new mongoose.Types.ObjectId(req.params.restaurantId);
         const reviews = await Review.find({ restaurantId });
         if (reviews.length ===0) {
-            return res.status(404).send({ error: "No reviews found." })
+            // Instead of 404, return an empty array with status 200
+            return res.status(200).json([]);
+           // return res.status(404).send({ error: "No reviews found." })
         }
         res.json(reviews)
     } catch (error) {
