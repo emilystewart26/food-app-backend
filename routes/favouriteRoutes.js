@@ -1,15 +1,14 @@
 const express = require("express");
 const { addToFavourites, removeFromFavourites, getFavourites } = require("../controllers/favouriteControllers");
-const { authenticateToken, authorizeRole } = require("../middleware/authMiddleware");
+const requireClerkAuth = require("../middleware/requireClerkAuth");
+const authorizeRole = require("../middleware/authorizeRole");
 const router = express.Router();
 
+router.get("/", requireClerkAuth, authorizeRole("user"), getFavourites);
 
+router.post("/:restaurantId", requireClerkAuth, authorizeRole("user"), addToFavourites);
 
-router.get("/", authenticateToken, authorizeRole("user"), getFavourites);
-
-router.post("/:restaurantId", authenticateToken, authorizeRole("user"), addToFavourites);
-
-router.delete("/:restaurantId", authenticateToken, authorizeRole("user"), removeFromFavourites);
+router.delete("/:restaurantId", requireClerkAuth, authorizeRole("user"), removeFromFavourites);
 
 
 

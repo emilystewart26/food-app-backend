@@ -1,38 +1,31 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    username: {
-        // to be display publicly on reviews posted etc.
-        type: String, 
-        required: true, 
-    },
-    email: { 
-        // look into email validation - send confirmation email when registering???
-        // also look into logging in with Google / Facebook accounts
-        type: String, 
-        required: true, 
-        unique: true 
-    },
-    password: { 
-        // think about password requirements (eg min.length, number, capital, symbol etc.)
-        // https://mongoosejs.com/docs/api/schemastring.html#SchemaString.prototype.match()
-        type: String, 
-        required: true 
-    },
-    role: {
-        type: String,
-        required: true,
-        enum:["admin", "user","vendor"]  
-    },
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    },
-    token: { 
-        type: String, 
-        default: null 
-    },
-    favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Restaurant" }] // this allows each user to store a list of favourite restaurants by ref in an array
-})
+  username: {
+    type: String, 
+    required: true,
+  },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },
+  /*password: { 
+    type: String, 
+    required: true 
+  },  --> now handled by Clerk, no need to store them in MongoDB or encrypt */
+  role: {
+    type: String,
+    required: true,
+    enum: ["admin", "user", "vendor"],
+    default: "user" 
+  },
+  clerkId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  favourites: [String],
+}, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);

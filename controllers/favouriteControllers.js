@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-const Review = require("../Models/Review");
 const Restaurant = require("../Models/Restaurant");
 const User = require("../Models/User");
-const jwt = require("jsonwebtoken");
 
 
 exports.addToFavourites = async (req, res) => {
