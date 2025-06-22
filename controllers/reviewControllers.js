@@ -1,5 +1,4 @@
 const Review = require("../Models/Review")
-const Restaurant = require("../Models/Restaurant")
 const User = require("../Models/User")
 const mongoose = require("mongoose")
 

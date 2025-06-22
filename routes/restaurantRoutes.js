@@ -2,33 +2,24 @@ const express = require("express")
 const router = express.Router()
 const { 
     getRestaurants,
-    //getRestaurantsByCity,
-    //getRestaurantsByName,
-    //getRestaurantsWithinRadius,
     getRestaurantById,
     getRestaurantsByUserId,
     addRestaurant,
     updateRestaurant,
     deleteRestaurant,
-} = require("../controllers/restaurantControllers")  
-const {authenticateToken, authorizeRole}  = require("../middleware/authMiddleware");
+} = require("../controllers/restaurantControllers");  
+const requireClerkAuth = require("../middleware/requireClerkAuth");
+const authorizeRole = require("../middleware/authorizeRole");
 
-
-// Get all restaurants + get restaurants by different search criteria (anyone - no login required)
 router.get("/", getRestaurants);
-//router.get("/nearby", getRestaurantsWithinRadius);
 router.get("/:id", getRestaurantById);
-router.get("/userid/:userId", authenticateToken, authorizeRole(["vendor","admin"]), getRestaurantsByUserId); // userId = "vendor" user._id
-//router.get("/name/:name", getRestaurantsByName);  *** now handled via buildFilterObject.js in utils ***
-//router.get("/city/:city", getRestaurantsByCity);  *** now handled via buildFilterObject.js in utils ***
+router.get("/userid/:userId", requireClerkAuth, authorizeRole(["vendor","admin"]), getRestaurantsByUserId); 
 
-// Create restaurant (if logged in as "vendor")
-router.post("/", authenticateToken, authorizeRole(["vendor","admin"]), addRestaurant);
+router.post("/", requireClerkAuth, authorizeRole(["vendor","admin"]), addRestaurant);
 
-// Update (if logged in as "vendor" && if restaurant's owner > if userId in restaurant DB matches the user._id in the user DB)
-router.put("/:id", authenticateToken, authorizeRole(["vendor","admin"]), updateRestaurant);
+router.put("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), updateRestaurant);
 
-// Delete (if logged in as "vendor" && if restaurant's owner > if userId in restaurant DB matches the user._id in the user DB)
-router.delete("/:id", authenticateToken, authorizeRole(["vendor","admin"]), deleteRestaurant);
+router.delete("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), deleteRestaurant);
+
 
 module.exports = router;

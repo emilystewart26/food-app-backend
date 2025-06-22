@@ -70,7 +70,7 @@ const restaurantSchema = new mongoose.Schema({
    enum: ["toilets", "garden", "wifi"]
    },
    tags:{
-    type: [String],  // freetype - max 3-4 fields??
+    type: [String],  
     required: false
    },
    description:{
@@ -81,8 +81,6 @@ const restaurantSchema = new mongoose.Schema({
     type:[String],
     required: false
    },
-   // owner will add a link to embed Google Maps when registering a new restaurant
-   // eg. <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1177.4412283087293!2d-1.5809516802827572!3d53.82716690263906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4879592368e644c7%3A0x10184eab936d6909!2sFika%20North%20Coffee!5e0!3m2!1sen!2suk!4v1749547015348!5m2!1sen!2suk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
    googleMapsUrl: {
     type:String,
     required: false
@@ -90,7 +88,7 @@ const restaurantSchema = new mongoose.Schema({
     priceRange: {
         type: String,
         required: false,
-        enum: ["cheap" , "moderate", "expensive"] //["£", "££","£££"]
+        enum: ["cheap" , "moderate", "expensive"] 
     },
     accessibility: {
         type:[String],

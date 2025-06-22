@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const { clerkMiddleware } = require('@clerk/express');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,21 +15,26 @@ app.use(cors({
     }));
 app.use(express.json());
 
+app.use(clerkMiddleware());
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL)
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.error('MongoDB connection error:', err));
 
+
+
 // Routes
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
-const authRoutes = require('./routes/authRoutes');
 const favouriteRoutes = require('./routes/favouriteRoutes')
+const userRoutes = require('./routes/userRoutes');
 
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/users', authRoutes);
 app.use('/api/users/favourites', favouriteRoutes);
+app.use('/api/users', userRoutes);
+
 
 // Start the server
 app.listen(PORT, () => {

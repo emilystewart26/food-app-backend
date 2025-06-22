@@ -2,9 +2,9 @@
 
 2. Initialise npm: npm init -y
 
-3. Install dependencies: npm i nodemon express mongoose dotenv cors bcrypt jsonwebtoken axios
+3. Install dependencies: npm i nodemon express mongoose dotenv cors bcrypt jsonwebtoken axios  @clerk/express   
 
-4. Create .env file locally & add MongoDB connection string + JWT secret key (for more info see: .env.example) + valid email address for Nominatim API requests
+4. Create .env file locally & add MongoDB connection string +  Clerk keys (2x) + valid email address for Nominatim API requests  (for more info see: .env.example) 
 
 
 5. Nominatim Usage Policy (aka Geocoding Policy)

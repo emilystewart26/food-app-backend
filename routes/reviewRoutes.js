@@ -6,17 +6,16 @@ const {
     getReviewsByUserId,
     getReviewsByRestaurantId, 
     addReview,
-} = require("../controllers/reviewControllers");
-const {authenticateToken, authorizeRole} = require("../middleware/authMiddleware");  
+} = require("../controllers/reviewControllers"); 
+const requireClerkAuth = require("../middleware/requireClerkAuth");
+const authorizeRole = require("../middleware/authorizeRole");
 
-// Get all reviews + reviews by different search criteria
 router.get("/", getReviews)
 router.get("/:id", getReviewsById)
-router.get("/userid/:userId", authenticateToken, authorizeRole("user"), getReviewsByUserId)
+router.get("/userid/:userId", requireClerkAuth, authorizeRole("user"), getReviewsByUserId)
 router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) 
 
-// Create review
-router.post("/", authenticateToken, authorizeRole(["user","admin"]), addReview)
+router.post("/", requireClerkAuth, authorizeRole(["user","admin"]), addReview)
  
 
 module.exports = router
