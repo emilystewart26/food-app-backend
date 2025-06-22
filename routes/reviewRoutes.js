@@ -15,7 +15,9 @@ router.get("/:id", getReviewsById)
 router.get("/userid/:userId", requireClerkAuth, authorizeRole("user"), getReviewsByUserId)
 router.get("/restaurantid/:restaurantId", getReviewsByRestaurantId) 
 
+
 router.post("/", requireClerkAuth, authorizeRole(["user","admin"]), addReview)
  
+// router.post("/", addReview)
 
 module.exports = router
