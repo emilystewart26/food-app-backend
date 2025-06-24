@@ -25,7 +25,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
-  favourites: [String],
+  
+  // changed favourites: [String],
+
+  favourites: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Restaurant"
+}],
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

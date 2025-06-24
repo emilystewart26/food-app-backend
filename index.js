@@ -32,7 +32,7 @@ const userRoutes = require('./routes/userRoutes');
 
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/users/favourites', favouriteRoutes);
+app.use('/api/favourites', favouriteRoutes); //changed app.use('/api/users/favourites', favouriteRoutes);
 app.use('/api/users', userRoutes);
 
 
