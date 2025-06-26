@@ -71,37 +71,31 @@ exports.getRestaurantsByUserId = async (req, res) => {
 
 exports.addRestaurant = async (req, res) => {
 
-    const userToken = req.headers.authorization.split(" ")[1]
+console.log("Received data:", req.body);
 
-    console.log("addRestaurant")
-    console.log(req.headers)
-    console.log(req.body)
-    console.log(userToken)
+const { user } = req; 
+    
+ // Sanitize helper (for input data)
+ const sanitize = (val) => {
+    if (typeof val !== "string") return val;
+    const trimmed = val.trim();
+    return trimmed === "" ? null : trimmed;
+  };
 
-    if (!userToken) {
-        return res.status(401).json({ message: "Unauthorized" })
-    }
-
-    const userInDB = await User.findOne({ token: userToken })
-
-    console.log(userInDB)
-
-    if (!userInDB) {
-        return res.status(401).json({ message: "Unauthorized" })
-    }
-
-
-
-const { address, postcode, city, country } = req.body;
+ const address = sanitize(req.body.address);
+ const postcode = sanitize(req.body.postcode);
+ const city = sanitize(req.body.city);
+ const country = sanitize(req.body.country);
 
 if (!address || !city || !country) {
     return res.status(400).json({ message: "Address, city, and country are required to fetch geolocation" });
 }
+if (!req.body.name || !req.body.category) {
+    return res.status(400).json({ message: "Name and category are required" });
+  }
 
-const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
-
-     
-    let lng, lat;
+ const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
+ let lng, lat;
     try {
         const geolocation = await geocodeWithNominatim(fullAddress);
         lng = geolocation.lng;
@@ -111,30 +105,30 @@ const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
     }
 
     const restaurant = new Restaurant({
-        name: req.body.name,
-        address: req.body.address,
-        postcode: req.body.postcode,
-        city: req.body.city,
-        country: req.body.country,
+        name: sanitize(req.body.name),
+        address,
+        postcode,
+        city,
+        country,
         location: {
             type: 'Point',
             coordinates: [lng, lat],
           },
-        telephone: req.body.telephone,
-        website: req.body.website,
-        category: req.body.category,
-        meals: req.body.meals,
-        dietary: req.body.dietary,
+        telephone: sanitize(req.body.telephone),
+        website: sanitize(req.body.website),
+        category: sanitize(req.body.category),
+        meals: Array.isArray(req.body.meals) ? req.body.meals : [],
+        dietary: Array.isArray(req.body.dietary) ? req.body.dietary : [],
         alcohol: req.body.alcohol,
-        welcomes: req.body.welcomes,
-        facilities: req.body.facilities,
-        tags: req.body.tags,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
-        googleMapsUrl: req.body.googleMapsUrl,
-        priceRange: req.body.priceRange,
-        accessibility: req.body.accessibility,
-        userId: userInDB._id,
+        welcomes: Array.isArray(req.body.welcomes) ? req.body.welcomes : [],
+        facilities: Array.isArray(req.body.facilities) ? req.body.facilities : [],
+        tags: Array.isArray(req.body.tags) ? req.body.tags : [],
+        description: sanitize(req.body.description),
+        imageUrl: sanitize(req.body.imageUrl),
+        googleMapsUrl: sanitize(req.body.googleMapsUrl),
+        priceRange: sanitize(req.body.priceRange),
+        accessibility: Array.isArray(req.body.accessibility) ? req.body.accessibility : [],
+        userId: user._id, // from Middleware
     })
 
     try {
@@ -145,6 +139,7 @@ const fullAddress = `${address}, ${postcode || ""}, ${city}, ${country}`.trim();
     }
 }
 
+/**  Not used in MVP but might want to add later  (check if needs refactoring) !!! 
 exports.updateRestaurant = async (req, res) => {
     try {
         const restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
@@ -169,4 +164,4 @@ exports.deleteRestaurant = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
-}
+}*/

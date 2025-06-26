@@ -17,9 +17,9 @@ router.get("/userid/:userId", requireClerkAuth, authorizeRole(["vendor","admin"]
 
 router.post("/", requireClerkAuth, authorizeRole(["vendor","admin"]), addRestaurant);
 
-router.put("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), updateRestaurant);
-
-router.delete("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), deleteRestaurant);
+// Not used in MVP but might want to add later!!!
+//router.put("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), updateRestaurant);
+// router.delete("/:id", requireClerkAuth, authorizeRole(["vendor","admin"]), deleteRestaurant);
 
 
 module.exports = router;
