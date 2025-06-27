@@ -51,29 +51,20 @@ exports.getReviewsByRestaurantId = async (req, res) => {
 }
 
 exports.addReview = async (req, res) => {
-     
+    
+   const clerkUserId = req.auth?.userId;
+    if (!clerkUserId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+    
+  const userInDB = await User.findOne({ clerkId: clerkUserId });
+      if (!userInDB) {
+        return res.status(401).json({ message: "User not found." });
+      }
+    
    const restaurantId = new mongoose.Types.ObjectId(req.body.restaurantId);//changed req.params.restaurantId
-  
-     const userToken = req.headers.authorization.split(" ")[1]
-
-    console.log("addReview")
-    console.log(req.headers)
-    console.log(req.body)
-    console.log(userToken)
-  
-    if (!userToken) {
-            return res.status(401).json({ message: "Unauthorized" })
-        }
-    
-        const userInDB = await User.findOne({ token: userToken })
-    
-        console.log(userInDB)
-    
-        if (!userInDB) {
-            return res.status(401).json({ message: "Unauthorized" })
-        }
-
-  const review = new Review({
+     
+   const review = new Review({
     foodReview: req.body.foodReview,
     foodStars: req.body.foodStars,
     ambienceReview: req.body.ambienceReview,
