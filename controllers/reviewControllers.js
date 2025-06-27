@@ -2,6 +2,7 @@ const Review = require("../Models/Review")
 const User = require("../Models/User")
 const mongoose = require("mongoose")
 
+
 exports.getReviews = async (req, res) => {
     try {
             const reviews = await Review.find()
@@ -20,6 +21,7 @@ exports.getReviewsById = async (req, res) => {
       }
 }
 
+
 exports.getReviewsByUserId = async (req, res) => {
   try {
           console.log("Route params:", req.params);
@@ -34,21 +36,21 @@ exports.getReviewsByUserId = async (req, res) => {
       }
 }
 
+
 exports.getReviewsByRestaurantId = async (req, res) => {
     try {
         console.log("Route params:", req.params);
         const restaurantId = new mongoose.Types.ObjectId(req.params.restaurantId);
         const reviews = await Review.find({ restaurantId });
         if (reviews.length ===0) {
-            // Instead of 404, return an empty array with status 200
-            return res.status(200).json([]);
-           // return res.status(404).send({ error: "No reviews found." })
+         return res.status(200).json([]);
         }
         res.json(reviews)
     } catch (error) {
-      res.status(500).json({ message: error.message })
+        res.status(500).json({ message: error.message })
     }
 }
+
 
 exports.addReview = async (req, res) => {
     

@@ -10,10 +10,6 @@ const userSchema = new mongoose.Schema({
     required: true, 
     unique: true 
   },
-  /*password: { 
-    type: String, 
-    required: true 
-  },  --> now handled by Clerk, no need to store them in MongoDB or encrypt */
   role: {
     type: String,
     required: true,

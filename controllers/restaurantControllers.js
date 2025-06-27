@@ -1,5 +1,4 @@
 const Restaurant = require("../Models/Restaurant");
-const User = require("../Models/User");
 const mongoose = require("mongoose");
 const geocodeWithNominatim = require("../utils/geocode");
 const buildFilterObject = require('../utils/buildFilterObject');
@@ -70,8 +69,7 @@ exports.getRestaurantsByUserId = async (req, res) => {
 
 
 exports.addRestaurant = async (req, res) => {
-
-console.log("Received data:", req.body);
+// console.log("Received data:", req.body);
 
 const { user } = req; 
     
