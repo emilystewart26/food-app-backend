@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 
+// ** schema needs review for data types, check matching frontend data input & expected data across the whole frontend  
+
 const restaurantSchema = new mongoose.Schema({
     name: {
         type: String,
